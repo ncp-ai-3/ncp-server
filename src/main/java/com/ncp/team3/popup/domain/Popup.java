@@ -51,7 +51,7 @@ public class Popup extends BaseEntity {
     @Column(name = "originId", unique = true, nullable = false)
     private Long originId;
 
-    @Column(name = "strat_date")
+    @Column(name = "start_date")
     private LocalDate startDate;
 
     @Column(name = "end_date")
@@ -63,7 +63,7 @@ public class Popup extends BaseEntity {
     @Column(name = "close_time")
     private LocalTime closeTime;
 
-    @Column(name = "reservationi_url", length = 255)
+    @Column(name = "reservation_url", length = 255)
     private String reservationUrl;
 
     @OneToMany(mappedBy = "popup")
@@ -176,7 +176,7 @@ public class Popup extends BaseEntity {
     }
 
     private static void validateOriginId(Long originId) {
-        if (originId != null && (originId > 0)) {
+        if (originId == null || originId <= 0) {
             throw new PopupDomainException(PopupErrorCode.INVALID_POPUP_ORIGIN_ID);
         }
     }
