@@ -1,0 +1,63 @@
+# ==========================================
+# 빌드 도구 (Gradle)
+# ==========================================
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# ==========================================
+# 운영체제 (macOS / Windows)
+# ==========================================
+# 맥(Mac) 환경에서 자동 생성되는 캐시 및 설정 파일
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+# 윈도우 환경 파일
+ehthumbs.db
+Thumbs.db
+
+# ==========================================
+# IDE (IntelliJ, STS, VS Code 등)
+# ==========================================
+### IntelliJ IDEA ###
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+### STS / Eclipse ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+### VS Code ###
+.vscode/
+
+# ==========================================
+# 로그 파일 (Logs)
+# ==========================================
+*.log
+logs/
+
+# ==========================================
+# 🚨 보안 및 환경 변수 (Secrets) 🚨
+# ==========================================
+# OpenAI API 키, NCP DB 비밀번호 등이 올라가지 않도록 철저히 방지!
+.env
+*.env
+application-secret.yml
+application-local.yml
