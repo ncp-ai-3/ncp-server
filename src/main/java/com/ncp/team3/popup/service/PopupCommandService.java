@@ -30,6 +30,8 @@ public class PopupCommandService implements CreatePopupUseCase {
         Popup popup = Popup.create(
                 request.imageUrl(),
                 request.title(),
+                request.mainBrand(),
+                request.hashtags(),
                 request.description(),
                 request.address(),
                 request.latitude(),
@@ -39,7 +41,9 @@ public class PopupCommandService implements CreatePopupUseCase {
                 request.endDate(),
                 request.openTime(),
                 request.closeTime(),
-                request.reservationUrl()
+                request.reservationUrl(),
+                request.status(),
+                null
         );
 
         Popup savedPopup = popupRepository.save(popup);

@@ -17,6 +17,11 @@ public record CreatePopupRequest(
         @Size(max = 255, message = "팝업 제목은 255자 이하여야 합니다.")
         String title,
 
+        @Size(max = 255, message = "메인 브랜드는 255자 이하여야 합니다.")
+        String mainBrand,
+
+        String hashtags,
+
         String description,
 
         @NotBlank(message = "주소는 필수입니다.")
@@ -38,14 +43,15 @@ public record CreatePopupRequest(
         @NotNull(message = "종료일은 필수입니다.")
         LocalDate endDate,
 
-        @NotNull(message = "오픈 시간은 필수입니다.")
         LocalTime openTime,
 
-        @NotNull(message = "마감 시간은 필수입니다.")
         LocalTime closeTime,
 
         @Size(max = 255, message = "예약 URL은 255자 이하여야 합니다.")
         String reservationUrl,
+
+        @Size(max = 50, message = "팝업 상태는 50자 이하여야 합니다.")
+        String status,
 
         List<Long> categoryIds
 ) {

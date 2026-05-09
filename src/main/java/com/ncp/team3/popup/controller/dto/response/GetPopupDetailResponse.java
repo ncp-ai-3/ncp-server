@@ -12,6 +12,8 @@ public record GetPopupDetailResponse(
         Long originalId,
         String imageUrl,
         String title,
+        String mainBrand,
+        String hashtags,
         String description,
         String address,
         Double latitude,
@@ -21,6 +23,7 @@ public record GetPopupDetailResponse(
         LocalTime openTime,
         LocalTime closeTime,
         String reservationUrl,
+        String status,
         List<CategoryResponse> categories
 ) {
     public static GetPopupDetailResponse from(Popup popup) {
@@ -34,6 +37,8 @@ public record GetPopupDetailResponse(
                 popup.getOriginId(),
                 popup.getImageUrl(),
                 popup.getTitle(),
+                popup.getMainBrand(),
+                popup.getHashtags(),
                 popup.getDescription(),
                 popup.getAddress(),
                 popup.getLatitude(),
@@ -43,6 +48,7 @@ public record GetPopupDetailResponse(
                 popup.getOpenTime(),
                 popup.getCloseTime(),
                 popup.getReservationUrl(),
+                popup.getStatus(),
                 categories
         );
     }
