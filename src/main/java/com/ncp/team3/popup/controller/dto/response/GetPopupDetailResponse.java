@@ -9,13 +9,13 @@ import java.util.List;
 
 public record GetPopupDetailResponse(
         Long id,
+        Long originalId,
         String imageUrl,
         String title,
         String description,
         String address,
         Double latitude,
         Double longitude,
-        String naverPlaceId,
         LocalDate startDate,
         LocalDate endDate,
         LocalTime openTime,
@@ -31,13 +31,13 @@ public record GetPopupDetailResponse(
 
         return new GetPopupDetailResponse(
                 popup.getId(),
+                popup.getOriginId(),
                 popup.getImageUrl(),
                 popup.getTitle(),
                 popup.getDescription(),
                 popup.getAddress(),
                 popup.getLatitude(),
                 popup.getLongitude(),
-                popup.getNaverPlaceId(),
                 popup.getStartDate(),
                 popup.getEndDate(),
                 popup.getOpenTime(),

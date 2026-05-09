@@ -34,7 +34,7 @@ public class PopupCommandService implements CreatePopupUseCase {
                 request.address(),
                 request.latitude(),
                 request.longitude(),
-                request.naverPlaceId(),
+                request.originId(),
                 request.startDate(),
                 request.endDate(),
                 request.openTime(),

@@ -48,8 +48,8 @@ public class Popup extends BaseEntity {
     @Column(name = "longitude")
     private Double longitude;
 
-    @Column(name = "naver_place_id", length = 255)
-    private String naverPlaceId;
+    @Column(name = "originId", unique = true, nullable = false)
+    private Long originId;
 
     @Column(name = "strat_date")
     private LocalDate startDate;
@@ -71,7 +71,7 @@ public class Popup extends BaseEntity {
 
     @Builder(access = AccessLevel.PRIVATE)
     private Popup(String imageUrl, String title, String description, String address, Double latitude, Double longitude,
-                  String naverPlaceId, LocalDate startDate, LocalDate endDate, LocalTime openTime, LocalTime closeTime,
+                  Long originId, LocalDate startDate, LocalDate endDate, LocalTime openTime, LocalTime closeTime,
                   String reservationUrl, List<PopupCategory> popupCategories) {
         this.imageUrl = imageUrl;
         this.title = title;
@@ -79,7 +79,7 @@ public class Popup extends BaseEntity {
         this.address = address;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.naverPlaceId = naverPlaceId;
+        this.originId = originId;
         this.startDate = startDate;
         this.endDate = endDate;
         this.openTime = openTime;
@@ -89,14 +89,14 @@ public class Popup extends BaseEntity {
     }
 
     public static Popup create(String imageUrl, String title, String description, String address, Double latitude,
-                               Double longitude, String naverPlaceId, LocalDate startDate, LocalDate endDate,
+                               Double longitude, Long originId, LocalDate startDate, LocalDate endDate,
                                LocalTime openTime, LocalTime closeTime, String reservationUrl) {
         validateImageUrl(imageUrl);
         validateTitle(title);
         validateDescription(description);
         validateAddress(address);
         validateLocation(latitude, longitude);
-        validateNaverPlaceId(naverPlaceId);
+        validateOriginId(originId);
         validateDate(startDate, endDate);
         validateTime(openTime, closeTime);
         validateReservationUrl(reservationUrl);
@@ -108,7 +108,7 @@ public class Popup extends BaseEntity {
                 .address(address)
                 .latitude(latitude)
                 .longitude(longitude)
-                .naverPlaceId(naverPlaceId)
+                .originId(originId)
                 .startDate(startDate)
                 .endDate(endDate)
                 .openTime(openTime)
@@ -119,14 +119,14 @@ public class Popup extends BaseEntity {
     }
 
     public void updatePopup(String imageUrl, String title, String description, String address, Double latitude,
-                            Double longitude, String naverPlaceId, LocalDate startDate, LocalDate endDate,
+                            Double longitude, Long originId, LocalDate startDate, LocalDate endDate,
                             LocalTime openTime, LocalTime closeTime, String reservationUrl) {
         validateImageUrl(imageUrl);
         validateTitle(title);
         validateDescription(description);
         validateAddress(address);
         validateLocation(latitude, longitude);
-        validateNaverPlaceId(naverPlaceId);
+        validateOriginId(originId);
         validateDate(startDate, endDate);
         validateTime(openTime, closeTime);
         validateReservationUrl(reservationUrl);
@@ -137,7 +137,7 @@ public class Popup extends BaseEntity {
         this.address = address;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.naverPlaceId = naverPlaceId;
+        this.originId = originId;
         this.startDate = startDate;
         this.endDate = endDate;
         this.openTime = openTime;
@@ -175,9 +175,9 @@ public class Popup extends BaseEntity {
         }
     }
 
-    private static void validateNaverPlaceId(String naverPlaceId) {
-        if (naverPlaceId != null && (naverPlaceId.isBlank() || naverPlaceId.length() > 255)) {
-            throw new PopupDomainException(PopupErrorCode.INVALID_POPUP_NAVER_PLACE_ID);
+    private static void validateOriginId(Long originId) {
+        if (originId != null && (originId > 0)) {
+            throw new PopupDomainException(PopupErrorCode.INVALID_POPUP_ORIGIN_ID);
         }
     }
 

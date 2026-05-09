@@ -2,6 +2,7 @@ package com.ncp.team3.popup.controller.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
@@ -28,8 +29,8 @@ public record CreatePopupRequest(
         @NotNull(message = "경도는 필수입니다.")
         Double longitude,
 
-        @Size(max = 255, message = "네이버 장소 ID는 255자 이하여야 합니다.")
-        String naverPlaceId,
+        @Positive(message = "팝업 ID는 1 이상입니다.")
+        Long originId,
 
         @NotNull(message = "시작일은 필수입니다.")
         LocalDate startDate,
