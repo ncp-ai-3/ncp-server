@@ -1,6 +1,8 @@
+import org.gradle.kotlin.dsl.invoke
+
 plugins {
     java
-    id("org.springframework.boot") version "3.5.12"
+    id("org.springframework.boot") version "3.3.0"
     id("io.spring.dependency-management") version "1.1.7"
 }
 
@@ -21,9 +23,12 @@ configurations {
 
 repositories {
     mavenCentral()
+    maven { url = uri("https://repo.spring.io/milestone") }
 }
 
 dependencies {
+    // Spring AI Bom
+    implementation(platform("org.springframework.ai:spring-ai-bom:1.0.0-M1"))
 
     // 기본 의존성
     implementation("org.springframework.boot:spring-boot-starter-validation")
@@ -42,7 +47,7 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     // Swagger
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.17")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
 
     // QueryDSL
     implementation("com.querydsl:querydsl-jpa:5.0.0:jakarta")
@@ -53,6 +58,19 @@ dependencies {
     // Jakarta
     annotationProcessor("jakarta.annotation:jakarta.annotation-api")
     annotationProcessor("jakarta.persistence:jakarta.persistence-api")
+
+    // PostgreSQL 기본 드라이버
+    runtimeOnly("org.postgresql:postgresql")
+
+    // GCP Vertex AI REST 인증
+    implementation("com.google.auth:google-auth-library-oauth2-http:1.23.0")
+
+    // Flyway Core
+    implementation("org.flywaydb:flyway-core")
+    implementation("org.flywaydb:flyway-database-postgresql")
+
+    // 임시 로컬 임베딩
+    implementation("org.springframework.ai:spring-ai-transformers-spring-boot-starter")
 }
 
 tasks.withType<Test> {

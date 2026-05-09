@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.Duration;
 import java.util.List;
 
 @Slf4j
@@ -22,7 +23,10 @@ public class ChatApiService {
 
     public ChatApiService(RestTemplateBuilder restTemplateBuilder,
                           @Value("${ai.fastapi.url}") String fastApiUrl) {
-        this.restTemplate = restTemplateBuilder.build();
+        this.restTemplate = restTemplateBuilder
+                .setConnectTimeout(Duration.ofSeconds(5))
+                .setReadTimeout(Duration.ofSeconds(30))
+                .build();
         this.fastApiUrl = fastApiUrl;
     }
 

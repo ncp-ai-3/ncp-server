@@ -15,10 +15,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -36,6 +36,12 @@ public class Popup extends BaseEntity {
     @Column(name = "title", length = 255)
     private String title;
 
+    @Column(name = "main_brand", length = 255)
+    private String mainBrand;
+
+    @Column(name = "hashtags", columnDefinition = "TEXT")
+    private String hashtags;
+
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
@@ -48,8 +54,11 @@ public class Popup extends BaseEntity {
     @Column(name = "longitude")
     private Double longitude;
 
-    @Column(name = "originId", unique = true, nullable = false)
+    @Column(name = "origin_id", unique = true, nullable = false)
     private Long originId;
+
+    @Column(name = "content_hash", length = 64)
+    private String contentHash;
 
     @Column(name = "start_date")
     private LocalDate startDate;
@@ -66,15 +75,21 @@ public class Popup extends BaseEntity {
     @Column(name = "reservation_url", length = 255)
     private String reservationUrl;
 
+    @Column(name = "status", length = 50)
+    private String status;
+
     @OneToMany(mappedBy = "popup")
     private List<PopupCategory> popupCategories = new ArrayList<>();
 
     @Builder(access = AccessLevel.PRIVATE)
-    private Popup(String imageUrl, String title, String description, String address, Double latitude, Double longitude,
-                  Long originId, LocalDate startDate, LocalDate endDate, LocalTime openTime, LocalTime closeTime,
-                  String reservationUrl, List<PopupCategory> popupCategories) {
+    private Popup(String imageUrl, String title, String mainBrand, String hashtags, String description, String address,
+                  Double latitude, Double longitude, Long originId, LocalDate startDate, LocalDate endDate,
+                  LocalTime openTime, LocalTime closeTime, String reservationUrl, String status, String contentHash,
+                  List<PopupCategory> popupCategories) {
         this.imageUrl = imageUrl;
         this.title = title;
+        this.mainBrand = mainBrand;
+        this.hashtags = hashtags;
         this.description = description;
         this.address = address;
         this.latitude = latitude;
@@ -85,14 +100,19 @@ public class Popup extends BaseEntity {
         this.openTime = openTime;
         this.closeTime = closeTime;
         this.reservationUrl = reservationUrl;
+        this.status = status;
+        this.contentHash = contentHash;
         this.popupCategories = popupCategories;
     }
 
-    public static Popup create(String imageUrl, String title, String description, String address, Double latitude,
-                               Double longitude, Long originId, LocalDate startDate, LocalDate endDate,
-                               LocalTime openTime, LocalTime closeTime, String reservationUrl) {
+    public static Popup create(String imageUrl, String title, String mainBrand, String hashtags, String description,
+                               String address, Double latitude, Double longitude, Long originId, LocalDate startDate,
+                               LocalDate endDate, LocalTime openTime, LocalTime closeTime, String reservationUrl,
+                               String status, String contentHash) {
         validateImageUrl(imageUrl);
         validateTitle(title);
+        validateMainBrand(mainBrand);
+        validateStatus(status);
         validateDescription(description);
         validateAddress(address);
         validateLocation(latitude, longitude);
@@ -104,6 +124,8 @@ public class Popup extends BaseEntity {
         return Popup.builder()
                 .imageUrl(imageUrl)
                 .title(title)
+                .mainBrand(mainBrand)
+                .hashtags(hashtags)
                 .description(description)
                 .address(address)
                 .latitude(latitude)
@@ -114,35 +136,42 @@ public class Popup extends BaseEntity {
                 .openTime(openTime)
                 .closeTime(closeTime)
                 .reservationUrl(reservationUrl)
+                .status(status)
+                .contentHash(contentHash)
                 .popupCategories(new ArrayList<>())
                 .build();
     }
 
-    public void updatePopup(String imageUrl, String title, String description, String address, Double latitude,
-                            Double longitude, Long originId, LocalDate startDate, LocalDate endDate,
-                            LocalTime openTime, LocalTime closeTime, String reservationUrl) {
+    public void updatePopup(String imageUrl, String title, String mainBrand, String hashtags, String description,
+                            String address, Double latitude, Double longitude, LocalDate startDate, LocalDate endDate,
+                            LocalTime openTime, LocalTime closeTime, String reservationUrl, String status,
+                            String contentHash) {
         validateImageUrl(imageUrl);
         validateTitle(title);
+        validateMainBrand(mainBrand);
+        validateStatus(status);
         validateDescription(description);
         validateAddress(address);
         validateLocation(latitude, longitude);
-        validateOriginId(originId);
         validateDate(startDate, endDate);
         validateTime(openTime, closeTime);
         validateReservationUrl(reservationUrl);
 
         this.imageUrl = imageUrl;
         this.title = title;
+        this.mainBrand = mainBrand;
+        this.hashtags = hashtags;
         this.description = description;
         this.address = address;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.originId = originId;
         this.startDate = startDate;
         this.endDate = endDate;
         this.openTime = openTime;
         this.closeTime = closeTime;
         this.reservationUrl = reservationUrl;
+        this.status = status;
+        this.contentHash = contentHash;
     }
 
     private static void validateImageUrl(String imageUrl) {
@@ -154,6 +183,18 @@ public class Popup extends BaseEntity {
     private static void validateTitle(String title) {
         if (title == null || title.isBlank() || title.length() > 255) {
             throw new PopupDomainException(PopupErrorCode.INVALID_POPUP_TITLE);
+        }
+    }
+
+    private static void validateMainBrand(String mainBrand) {
+        if (mainBrand != null && mainBrand.length() > 255) {
+            throw new PopupDomainException(PopupErrorCode.INVALID_POPUP_MAIN_BRAND);
+        }
+    }
+
+    private static void validateStatus(String status) {
+        if (status != null && status.length() > 50) {
+            throw new PopupDomainException(PopupErrorCode.INVALID_POPUP_STATUS);
         }
     }
 
@@ -188,6 +229,10 @@ public class Popup extends BaseEntity {
     }
 
     private static void validateTime(LocalTime openTime, LocalTime closeTime) {
+        if (openTime == null && closeTime == null) {
+            return;
+        }
+
         if (openTime == null || closeTime == null || !openTime.isBefore(closeTime)) {
             throw new PopupDomainException(PopupErrorCode.INVALID_POPUP_TIME);
         }

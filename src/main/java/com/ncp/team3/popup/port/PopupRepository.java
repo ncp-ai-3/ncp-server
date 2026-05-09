@@ -10,6 +10,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PopupRepository extends JpaRepository<Popup, Long> {
+    Optional<Popup> findByOriginId(Long originId);
+
+    List<Popup> findAllByOriginIdIn(List<Long> originIds);
+
     @EntityGraph(attributePaths = {"popupCategories", "popupCategories.category"})
     @Query("select p from Popup p where p.id = :id")
     Optional<Popup> findDetailById(@Param("id") Long id);

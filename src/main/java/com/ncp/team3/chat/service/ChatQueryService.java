@@ -46,7 +46,3 @@ public class ChatQueryService implements AskChatUseCase {
         return new ClientResponseDto(aiResult.answer(), recommendedPopups);
     }
 }
-
-
-// 크롤링 데이터 -> db 저장
-// 임베딩 -> 스프링

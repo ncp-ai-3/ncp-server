@@ -25,6 +25,8 @@ public enum PopupErrorCode implements BaseCode {
     INVALID_CATEGORY_NAME(HttpStatus.BAD_REQUEST, "POPUP-013", "카테고리명이 유효하지 않습니다."),
     INVALID_POPUP_CATEGORY_POPUP(HttpStatus.BAD_REQUEST, "POPUP-014", "팝업 카테고리의 팝업 정보가 유효하지 않습니다."),
     INVALID_POPUP_CATEGORY_CATEGORY(HttpStatus.BAD_REQUEST, "POPUP-015", "팝업 카테고리의 카테고리 정보가 유효하지 않습니다."),
+    INVALID_POPUP_MAIN_BRAND(HttpStatus.BAD_REQUEST, "POPUP-016", "팝업 메인 브랜드가 유효하지 않습니다."),
+    INVALID_POPUP_STATUS(HttpStatus.BAD_REQUEST, "POPUP-017", "팝업 상태가 유효하지 않습니다."),
     ;
 
     private final HttpStatus httpStatus;
