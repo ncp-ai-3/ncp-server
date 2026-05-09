@@ -10,5 +10,7 @@ public enum Domain {
     AUTHENTICATION,
     AUTHORIZATION,
     MEMBER,
+    BOOKMARK,
+    POPUP,
     AI
 }
