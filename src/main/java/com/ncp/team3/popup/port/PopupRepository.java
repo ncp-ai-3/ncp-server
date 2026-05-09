@@ -6,10 +6,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface PopupRepository extends JpaRepository<Popup, Long> {
     @EntityGraph(attributePaths = {"popupCategories", "popupCategories.category"})
     @Query("select p from Popup p where p.id = :id")
     Optional<Popup> findDetailById(@Param("id") Long id);
+
+    @EntityGraph(attributePaths = {"popupCategories", "popupCategories.category"})
+    @Query("select distinct p from Popup p where p.id in :ids")
+    List<Popup> findDetailsByIdIn(@Param("ids") List<Long> ids);
 }
