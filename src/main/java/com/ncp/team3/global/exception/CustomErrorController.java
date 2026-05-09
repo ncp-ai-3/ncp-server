@@ -4,6 +4,7 @@ package com.ncp.team3.global.exception;
 import com.ncp.team3.global.exception.constant.CommonErrorCode;
 import com.ncp.team3.global.response.ApiResponse;
 import com.ncp.team3.global.response.code.BaseCode;
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
  * GlobalExceptionHandler가 처리하지 못하는 에러를 처리하는 fallback 컨트롤러 - 404 Not Found (존재하지 않는 URL) - Filter에서 발생한 예외 - Servlet 레벨
  * 에러
  */
+@Hidden
 @Slf4j
 @RestController
 @RequestMapping("/error")
