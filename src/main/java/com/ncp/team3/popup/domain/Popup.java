@@ -8,12 +8,15 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -24,8 +27,8 @@ import java.time.LocalTime;
 public class Popup extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "popup_id")
-    private Long popupId;
+    @Column(name = "id")
+    private Long id;
 
     @Column(name = "image_url", length = 255)
     private String imageUrl;
@@ -63,10 +66,13 @@ public class Popup extends BaseEntity {
     @Column(name = "reservationi_url", length = 255)
     private String reservationUrl;
 
+    @OneToMany(mappedBy = "popup")
+    private List<PopupCategory> popupCategories = new ArrayList<>();
+
     @Builder(access = AccessLevel.PRIVATE)
     private Popup(String imageUrl, String title, String description, String address, Double latitude, Double longitude,
                   String naverPlaceId, LocalDate startDate, LocalDate endDate, LocalTime openTime, LocalTime closeTime,
-                  String reservationUrl) {
+                  String reservationUrl, List<PopupCategory> popupCategories) {
         this.imageUrl = imageUrl;
         this.title = title;
         this.description = description;
@@ -79,6 +85,7 @@ public class Popup extends BaseEntity {
         this.openTime = openTime;
         this.closeTime = closeTime;
         this.reservationUrl = reservationUrl;
+        this.popupCategories = popupCategories;
     }
 
     public static Popup create(String imageUrl, String title, String description, String address, Double latitude,
@@ -107,6 +114,7 @@ public class Popup extends BaseEntity {
                 .openTime(openTime)
                 .closeTime(closeTime)
                 .reservationUrl(reservationUrl)
+                .popupCategories(new ArrayList<>())
                 .build();
     }
 

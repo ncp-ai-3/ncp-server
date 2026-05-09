@@ -21,8 +21,8 @@ import lombok.NoArgsConstructor;
 public class Member extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
-    private Long userId;
+    @Column(name = "id")
+    private Long id;
 
     @Column(name = "email", length = 255)
     private String email;
