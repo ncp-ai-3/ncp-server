@@ -58,3 +58,6 @@ rag:
     read-timeout-seconds: ${RAG_EMBEDDING_READ_TIMEOUT_SECONDS:120}
     api-key: ${RAG_EMBEDDING_API_KEY:}
     dimension: ${RAG_EMBEDDING_DIMENSION:768}
+
+app:
+  frontend-url: ${FRONTEND_URL:http://localhost:3000}

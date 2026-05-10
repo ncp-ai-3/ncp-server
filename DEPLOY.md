@@ -52,6 +52,7 @@ JWT_REFRESH_TOKEN_SECRET=change-this-refresh-secret-at-least-32-bytes
 NAVER_CLIENT_ID=your-naver-oauth-client-id
 NAVER_CLIENT_SECRET=your-naver-oauth-client-secret
 NAVER_REDIRECT_URI=http://your-server-ip:8080/login/oauth2/code/naver
+FRONTEND_URL=http://your-frontend-domain-or-ip:3000
 NCP_CLIENT_ID=
 NCP_CLIENT_SECRET=
 ```
@@ -114,7 +115,25 @@ https://maps.apigw.ntruss.com/map-direction/v1/driving
 
 `NAVER_MAPS_CLIENT_ID`, `NAVER_MAPS_CLIENT_SECRET`은 Naver Cloud Platform에서 발급받은 Maps API 인증 정보를 `.env`에 입력합니다.
 
-## 9. 재배포
+## 9. 네이버 로그인 콜백 설정
+
+네이버 개발자센터의 Callback URL은 백엔드 콜백 주소로 등록합니다.
+
+```text
+http://서버공인IP:8080/login/oauth2/code/naver
+```
+
+`.env`의 `NAVER_REDIRECT_URI`도 위 값과 정확히 같아야 합니다.
+
+로그인 성공 후 백엔드는 JSON을 반환하지 않고 프론트 콜백 페이지로 redirect합니다.
+
+```text
+${FRONTEND_URL}/callback?accessToken=...&refreshToken=...&memberId=...
+```
+
+프론트 배포 주소가 있으면 `FRONTEND_URL`에 입력합니다.
+
+## 10. 재배포
 
 코드를 갱신한 뒤 다시 빌드합니다.
 
@@ -124,7 +143,7 @@ docker compose up -d --build
 docker compose logs -f spring
 ```
 
-## 10. 중지
+## 11. 중지
 
 ```bash
 docker compose down
