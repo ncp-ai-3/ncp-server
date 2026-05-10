@@ -14,6 +14,7 @@ public enum BookmarkErrorCode implements BaseCode {
     INVALID_BOOKMARK_MEMBER(HttpStatus.BAD_REQUEST, "BOOKMARK-002", "북마크 회원 정보가 유효하지 않습니다."),
     INVALID_BOOKMARK_POPUP(HttpStatus.BAD_REQUEST, "BOOKMARK-003", "북마크 팝업 정보가 유효하지 않습니다."),
     BOOKMARK_ALREADY_EXISTS(HttpStatus.CONFLICT, "BOOKMARK-004", "이미 등록된 북마크입니다."),
+    BOOKMARK_NOT_OWNED(HttpStatus.FORBIDDEN, "BOOKMARK-005", "본인의 북마크만 삭제할 수 있습니다."),
     ;
 
     private final HttpStatus httpStatus;

@@ -1,6 +1,7 @@
 package com.ncp.team3.chat.service;
 
 import com.ncp.team3.chat.controller.dto.request.ChatRequestDto;
+import com.ncp.team3.chat.controller.dto.request.FastApiChatRequestDto;
 import com.ncp.team3.chat.controller.dto.response.ChatResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,11 +31,12 @@ public class ChatApiService {
         this.fastApiUrl = fastApiUrl;
     }
 
-    public ChatResponseDto getAnswerFromAi(ChatRequestDto requestDto) {
+    public ChatResponseDto getAnswerFromAi(Long memberId, ChatRequestDto requestDto) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<ChatRequestDto> requestEntity = new HttpEntity<>(requestDto, headers);
+        FastApiChatRequestDto fastApiRequest = new FastApiChatRequestDto(memberId, requestDto.question());
+        HttpEntity<FastApiChatRequestDto> requestEntity = new HttpEntity<>(fastApiRequest, headers);
 
         try {
             ChatResponseDto response = restTemplate.postForObject(

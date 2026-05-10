@@ -29,8 +29,8 @@ public class BookmarkCommandService implements CreateBookmarkUseCase, DeleteBook
     private final PopupRepository popupRepository;
 
     @Override
-    public CreateBookmarkResponse createBookmark(CreateBookmarkRequest request) {
-        Member member = memberRepository.findById(request.memberId())
+    public CreateBookmarkResponse createBookmark(Long memberId, CreateBookmarkRequest request) {
+        Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberDomainException(MemberErrorCode.MEMBER_NOT_FOUND));
         Popup popup = popupRepository.findById(request.popupId())
                 .orElseThrow(() -> new PopupDomainException(PopupErrorCode.POPUP_NOT_FOUND));
@@ -46,9 +46,13 @@ public class BookmarkCommandService implements CreateBookmarkUseCase, DeleteBook
     }
 
     @Override
-    public void deleteBookmark(Long bookmarkId) {
+    public void deleteBookmark(Long memberId, Long bookmarkId) {
         Bookmark bookmark = bookmarkRepository.findById(bookmarkId)
                 .orElseThrow(() -> new BookmarkDomainException(BookmarkErrorCode.BOOKMARK_NOT_FOUND));
+
+        if (!bookmark.getMember().getId().equals(memberId)) {
+            throw new BookmarkDomainException(BookmarkErrorCode.BOOKMARK_NOT_OWNED);
+        }
 
         bookmarkRepository.delete(bookmark);
     }

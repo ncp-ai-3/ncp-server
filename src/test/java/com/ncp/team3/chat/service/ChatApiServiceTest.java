@@ -26,7 +26,7 @@ class ChatApiServiceTest {
         when(restTemplate.postForObject(eq("http://localhost:8000/chat"), any(), eq(ChatResponseDto.class)))
                 .thenReturn(response);
 
-        ChatResponseDto result = chatApiService.getAnswerFromAi(new ChatRequestDto(1L, "질문"));
+        ChatResponseDto result = chatApiService.getAnswerFromAi(1L, new ChatRequestDto("질문"));
 
         assertThat(result).isEqualTo(response);
     }
@@ -37,7 +37,7 @@ class ChatApiServiceTest {
         when(restTemplate.postForObject(eq("http://localhost:8000/chat"), any(), eq(ChatResponseDto.class)))
                 .thenReturn(null);
 
-        ChatResponseDto result = chatApiService.getAnswerFromAi(new ChatRequestDto(1L, "질문"));
+        ChatResponseDto result = chatApiService.getAnswerFromAi(1L, new ChatRequestDto("질문"));
 
         assertThat(result.answer()).isEqualTo("AI 서버 응답 오류");
         assertThat(result.popupIds()).isEmpty();
@@ -49,7 +49,7 @@ class ChatApiServiceTest {
         when(restTemplate.postForObject(eq("http://localhost:8000/chat"), any(), eq(ChatResponseDto.class)))
                 .thenThrow(new RestClientException("fail"));
 
-        ChatResponseDto result = chatApiService.getAnswerFromAi(new ChatRequestDto(1L, "질문"));
+        ChatResponseDto result = chatApiService.getAnswerFromAi(1L, new ChatRequestDto("질문"));
 
         assertThat(result.answer()).isEqualTo("AI 서버 응답 오류");
         assertThat(result.popupIds()).isEmpty();

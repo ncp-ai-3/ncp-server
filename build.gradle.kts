@@ -33,6 +33,7 @@ dependencies {
     // 기본 의존성
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-security")
 
     // DB
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -64,6 +65,11 @@ dependencies {
 
     // GCP Vertex AI REST 인증
     implementation("com.google.auth:google-auth-library-oauth2-http:1.23.0")
+
+    // JWT
+    implementation("io.jsonwebtoken:jjwt-api:0.12.5")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.5")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.5")
 
     // Flyway Core
     implementation("org.flywaydb:flyway-core")

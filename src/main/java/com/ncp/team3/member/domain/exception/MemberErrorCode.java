@@ -12,7 +12,8 @@ public enum MemberErrorCode implements BaseCode {
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER-001", "회원을 찾을 수 없습니다."),
 
     INVALID_MEMBER_EMAIL(HttpStatus.BAD_REQUEST, "MEMBER-002", "회원 이메일이 유효하지 않습니다."),
-    INVALID_MEMBER_PASSWORD(HttpStatus.BAD_REQUEST, "MEMBER-003", "회원 비밀번호가 유효하지 않습니다."),
+    INVALID_MEMBER_NAME(HttpStatus.BAD_REQUEST, "MEMBER-003", "회원 이름이 유효하지 않습니다."),
+    INVALID_MEMBER_IMAGE_URL(HttpStatus.BAD_REQUEST, "MEMBER-004", "회원 이미지 URL이 유효하지 않습니다."),
     ;
 
     private final HttpStatus httpStatus;

@@ -24,8 +24,8 @@ public class ChatQueryService implements AskChatUseCase {
     private final PopupRepository popupRepository;
 
     @Override
-    public ClientResponseDto askToAi(ChatRequestDto request) {
-        ChatResponseDto aiResult = chatApiService.getAnswerFromAi(request);
+    public ClientResponseDto askToAi(Long memberId, ChatRequestDto request) {
+        ChatResponseDto aiResult = chatApiService.getAnswerFromAi(memberId, request);
         List<Long> popupIds = aiResult.popupIds() == null ? List.of() : aiResult.popupIds();
 
         if (popupIds.isEmpty()) {

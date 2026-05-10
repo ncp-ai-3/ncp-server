@@ -17,7 +17,7 @@ public class MemberCommandService implements CreateMemberUseCase {
 
     @Override
     public CreateMemberResponse createMember(CreateMemberRequest request) {
-        Member member = Member.create(request.email(), request.password());
+        Member member = Member.create(request.email(), request.name(), request.imageUrl());
         Member savedMember = memberRepository.save(member);
 
         return CreateMemberResponse.from(savedMember);
