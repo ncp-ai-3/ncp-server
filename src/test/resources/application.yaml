@@ -1,0 +1,42 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:team3test;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  flyway:
+    enabled: false
+
+rag:
+  embedding:
+    base-url: http://127.0.0.1:1
+    dimension: 768
+
+jwt:
+  access-token-secret: "0123456789012345678901234567890123456789012345678901234567890123"
+  refresh-token-secret: "0123456789012345678901234567890123456789012345678901234567890124"
+  access-token-validity-in-seconds: 3600
+  refresh-token-validity-in-seconds: 7200
+
+oauth:
+  naver:
+    client-id: test-naver-client-id
+    client-secret: test-naver-secret
+    redirect-uri: http://localhost/oauth/naver/callback
+
+ai:
+  fastapi:
+    url: http://127.0.0.1:2
+
+popply:
+  base-url: http://127.0.0.1:3
+  store-path: /api/stores
+  origin: http://127.0.0.1
+  referer: http://127.0.0.1
+  timeout-seconds: 5

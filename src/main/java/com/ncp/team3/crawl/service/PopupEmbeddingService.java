@@ -5,7 +5,7 @@ import com.ncp.team3.crawl.infrastructure.EmbeddingClient;
 import com.ncp.team3.crawl.infrastructure.PopupEmbeddingJdbcRepository;
 import com.ncp.team3.popup.domain.Popup;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,10 +20,10 @@ public class PopupEmbeddingService {
 
     public PopupEmbeddingService(EmbeddingClient embeddingClient,
                                  PopupEmbeddingJdbcRepository popupEmbeddingJdbcRepository,
-                                 @Value("${gcp.vertex.embedding-dimension}") int embeddingDimension) {
+                                 Environment environment) {
         this.embeddingClient = embeddingClient;
         this.popupEmbeddingJdbcRepository = popupEmbeddingJdbcRepository;
-        this.embeddingDimension = embeddingDimension;
+        this.embeddingDimension = environment.getProperty("rag.embedding.dimension", Integer.class, 768);
     }
 
     public boolean createOrUpdateEmbedding(Popup popup, List<String> categoryNames) {
