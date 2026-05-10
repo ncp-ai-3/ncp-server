@@ -53,3 +53,8 @@ naver:
 rag:
   embedding:
     base-url: ${RAG_EMBEDDING_BASE_URL:http://localhost:8000}
+    path: ${RAG_EMBEDDING_PATH:/api/v1/embed}
+    connect-timeout-seconds: ${RAG_EMBEDDING_CONNECT_TIMEOUT_SECONDS:5}
+    read-timeout-seconds: ${RAG_EMBEDDING_READ_TIMEOUT_SECONDS:120}
+    api-key: ${RAG_EMBEDDING_API_KEY:}
+    dimension: ${RAG_EMBEDDING_DIMENSION:768}
