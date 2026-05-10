@@ -1,0 +1,14 @@
+services:
+  spring:
+    build: .
+    container_name: ncp-server
+    ports:
+      - "8080:8080"
+    environment:
+      DB_URL: ${DB_URL}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      RAG_EMBEDDING_BASE_URL: ${RAG_EMBEDDING_BASE_URL}
+      NAVER_MAPS_CLIENT_ID: ${NAVER_MAPS_CLIENT_ID}
+      NAVER_MAPS_CLIENT_SECRET: ${NAVER_MAPS_CLIENT_SECRET}
+    restart: unless-stopped

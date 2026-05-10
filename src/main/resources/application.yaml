@@ -2,48 +2,39 @@ spring:
   application:
     name: team3
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/team3}
-    username: ${SPRING_DATASOURCE_USERNAME:}
-    password: ${SPRING_DATASOURCE_PASSWORD:}
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
   flyway:
     baseline-on-migrate: true
+
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
         format_sql: true
-
-# RAG 동기 임베딩 — 실제 URL 은 환경 변수로만 주입 (레포에 IP/도메인 박지 말 것)
-rag:
-  embedding:
-    base-url: ${RAG_EMBEDDING_BASE_URL:http://localhost:8001}
-    path: ${RAG_EMBEDDING_PATH:/api/v1/embed}
-    connect-timeout-seconds: ${RAG_EMBEDDING_CONNECT_TIMEOUT_SECONDS:5}
-    read-timeout-seconds: ${RAG_EMBEDDING_READ_TIMEOUT_SECONDS:120}
-    api-key: ${RAG_EMBEDDING_API_KEY:}
-    dimension: ${RAG_EMBEDDING_DIMENSION:768}
 
 ai:
   fastapi:
     url: ${FASTAPI_CHAT_URL:http://localhost:8000/chat}
 
 popply:
-  base-url: ${POPPLY_BASE_URL:https://api.popply.co.kr}
-  store-path: ${POPPLY_STORE_PATH:/api/store/}
-  origin: ${POPPLY_ORIGIN:https://www.popply.co.kr}
-  referer: ${POPPLY_REFERER:https://www.popply.co.kr/}
-  timeout-seconds: ${POPPLY_TIMEOUT_SECONDS:10}
+  base-url: https://api.popply.co.kr
+  store-path: /api/store/
+  origin: https://www.popply.co.kr
+  referer: https://www.popply.co.kr/
+  timeout-seconds: 10
 
 ncp:
   client-id: ${NCP_CLIENT_ID:}
   client-secret: ${NCP_CLIENT_SECRET:}
 
 jwt:
-  access-token-secret: ${JWT_ACCESS_TOKEN_SECRET:}
-  refresh-token-secret: ${JWT_REFRESH_TOKEN_SECRET:}
+  access-token-secret: ${JWT_ACCESS_TOKEN_SECRET:team3-local-access-token-secret-must-be-at-least-32-bytes}
+  refresh-token-secret: ${JWT_REFRESH_TOKEN_SECRET:team3-local-refresh-token-secret-must-be-at-least-32-bytes}
   access-token-validity-in-seconds: ${JWT_ACCESS_TOKEN_VALIDITY_IN_SECONDS:3600}
   refresh-token-validity-in-seconds: ${JWT_REFRESH_TOKEN_VALIDITY_IN_SECONDS:1209600}
 
@@ -52,3 +43,13 @@ oauth:
     client-id: ${NAVER_CLIENT_ID:}
     client-secret: ${NAVER_CLIENT_SECRET:}
     redirect-uri: ${NAVER_REDIRECT_URI:http://localhost:8080/login/oauth2/code/naver}
+
+naver:
+  maps:
+    directions-url: https://maps.apigw.ntruss.com/map-direction/v1/driving
+    client-id: ${NAVER_MAPS_CLIENT_ID}
+    client-secret: ${NAVER_MAPS_CLIENT_SECRET}
+
+rag:
+  embedding:
+    base-url: ${RAG_EMBEDDING_BASE_URL:http://localhost:8000}
