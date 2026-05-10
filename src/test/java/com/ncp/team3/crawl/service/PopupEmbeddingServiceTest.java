@@ -4,6 +4,7 @@ import com.ncp.team3.crawl.infrastructure.EmbeddingClient;
 import com.ncp.team3.crawl.infrastructure.PopupEmbeddingJdbcRepository;
 import com.ncp.team3.popup.domain.Popup;
 import org.junit.jupiter.api.Test;
+import org.springframework.core.env.Environment;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -19,11 +20,17 @@ import static org.mockito.Mockito.when;
 class PopupEmbeddingServiceTest {
     private final EmbeddingClient embeddingClient = mock(EmbeddingClient.class);
     private final PopupEmbeddingJdbcRepository popupEmbeddingJdbcRepository = mock(PopupEmbeddingJdbcRepository.class);
-    private final PopupEmbeddingService popupEmbeddingService = new PopupEmbeddingService(
-            embeddingClient,
-            popupEmbeddingJdbcRepository,
-            3
-    );
+    private final Environment environment = mock(Environment.class);
+    private final PopupEmbeddingService popupEmbeddingService;
+
+    PopupEmbeddingServiceTest() {
+        when(environment.getProperty(eq("rag.embedding.dimension"), eq(Integer.class), eq(768))).thenReturn(3);
+        this.popupEmbeddingService = new PopupEmbeddingService(
+                embeddingClient,
+                popupEmbeddingJdbcRepository,
+                environment
+        );
+    }
 
     @Test
     void 임베딩_content를_정해진_형식으로_생성한다() {

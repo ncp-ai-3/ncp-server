@@ -45,6 +45,7 @@ dependencies {
 
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("com.h2database:h2")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     // Swagger
@@ -62,9 +63,6 @@ dependencies {
 
     // PostgreSQL 기본 드라이버
     runtimeOnly("org.postgresql:postgresql")
-
-    // GCP Vertex AI REST 인증
-    implementation("com.google.auth:google-auth-library-oauth2-http:1.23.0")
 
     // JWT
     implementation("io.jsonwebtoken:jjwt-api:0.12.5")

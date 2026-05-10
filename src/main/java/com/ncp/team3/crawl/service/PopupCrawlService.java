@@ -56,7 +56,7 @@ public class PopupCrawlService {
                 }
             } catch (Exception e) {
                 counter.embeddingFailed++;
-                log.warn("[POPUP EMBEDDING FAILED] originId={}, reason={}", item.storeId(), e.getMessage());
+                log.warn("[POPUP EMBEDDING FAILED] originId={}, reason={}", item.storeId(), e.getMessage(), e);
             }
         } catch (Exception e) {
             counter.failed++;
