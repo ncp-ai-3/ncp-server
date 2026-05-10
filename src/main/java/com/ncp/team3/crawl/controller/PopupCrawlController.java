@@ -19,7 +19,6 @@ import java.time.LocalDate;
 public class PopupCrawlController {
     private final PopupCrawlService popupCrawlService;
 
-    // TODO: 운영에서는 관리자 권한 검증을 추가해야 합니다.
     @PostMapping
     public PopupCrawlResultResponse crawl(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
