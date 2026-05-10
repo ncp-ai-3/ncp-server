@@ -39,11 +39,21 @@ DB_URL=jdbc:postgresql://your-db-host:5432/your-db-name
 DB_USERNAME=your-db-username
 DB_PASSWORD=your-db-password
 RAG_EMBEDDING_BASE_URL=http://your-rag-server-ip:8000
+FASTAPI_CHAT_URL=http://your-fastapi-server-ip:8000/chat
 NAVER_MAPS_CLIENT_ID=your-naver-client-id
 NAVER_MAPS_CLIENT_SECRET=your-naver-client-secret
+JWT_ACCESS_TOKEN_SECRET=change-this-access-secret-at-least-32-bytes
+JWT_REFRESH_TOKEN_SECRET=change-this-refresh-secret-at-least-32-bytes
+NAVER_CLIENT_ID=your-naver-oauth-client-id
+NAVER_CLIENT_SECRET=your-naver-oauth-client-secret
+NAVER_REDIRECT_URI=http://your-server-ip:8080/login/oauth2/code/naver
+NCP_CLIENT_ID=
+NCP_CLIENT_SECRET=
 ```
 
 `.env`는 `.gitignore`에 포함되어 있으므로 Git에 올리지 않습니다.
+
+필수값은 `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `RAG_EMBEDDING_BASE_URL`, `NAVER_MAPS_CLIENT_ID`, `NAVER_MAPS_CLIENT_SECRET`입니다. 네이버 OAuth 로그인, 채팅 FastAPI, JWT 운영 시크릿을 운영에서 사용할 경우 나머지 값도 실제 값으로 채워 넣습니다.
 
 ## 4. Docker Compose 실행
 
@@ -52,6 +62,12 @@ docker compose up -d --build
 ```
 
 컨테이너는 호스트의 `8080` 포트로 실행됩니다.
+
+이미 서버에서 Docker를 설치했다면 여기부터 실행하면 됩니다.
+
+```bash
+docker compose --env-file .env up -d --build
+```
 
 ## 5. 로그 확인
 
