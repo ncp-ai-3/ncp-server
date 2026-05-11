@@ -49,7 +49,7 @@ public class ChatApiService {
                     ? response
                     : new ChatResponseDto("AI 서버 응답 오류", List.of());
         } catch (RestClientException e) {
-            log.warn("[CHAT API ERROR] {}", e.getMessage());
+            log.warn("[CHAT API ERROR] url={}, message={}", fastApiUrl, e.getMessage());
             return new ChatResponseDto("AI 서버 응답 오류", List.of());
         }
     }
