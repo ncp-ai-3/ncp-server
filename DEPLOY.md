@@ -51,8 +51,8 @@ JWT_ACCESS_TOKEN_SECRET=change-this-access-secret-at-least-32-bytes
 JWT_REFRESH_TOKEN_SECRET=change-this-refresh-secret-at-least-32-bytes
 NAVER_CLIENT_ID=your-naver-oauth-client-id
 NAVER_CLIENT_SECRET=your-naver-oauth-client-secret
-NAVER_REDIRECT_URI=http://your-server-ip:8080/login/oauth2/code/naver
-FRONTEND_URL=http://your-frontend-domain-or-ip:3000
+NAVER_REDIRECT_URI=http://101.79.22.195/login/oauth2/code/naver
+FRONTEND_URL=http://101.79.22.195
 NCP_CLIENT_ID=
 NCP_CLIENT_SECRET=
 ```
@@ -120,7 +120,7 @@ https://maps.apigw.ntruss.com/map-direction/v1/driving
 네이버 개발자센터의 Callback URL은 백엔드 콜백 주소로 등록합니다.
 
 ```text
-http://서버공인IP:8080/login/oauth2/code/naver
+http://서버공인IP/login/oauth2/code/naver
 ```
 
 `.env`의 `NAVER_REDIRECT_URI`도 위 값과 정확히 같아야 합니다.

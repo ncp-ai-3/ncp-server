@@ -17,6 +17,9 @@ spring:
       hibernate:
         format_sql: true
 
+server:
+  forward-headers-strategy: framework
+
 ai:
   fastapi:
     url: ${FASTAPI_CHAT_URL:http://localhost:8000/chat}
@@ -42,7 +45,7 @@ oauth:
   naver:
     client-id: ${NAVER_CLIENT_ID:}
     client-secret: ${NAVER_CLIENT_SECRET:}
-    redirect-uri: ${NAVER_REDIRECT_URI:http://localhost:8080/login/oauth2/code/naver}
+    redirect-uri: ${NAVER_REDIRECT_URI}
 
 naver:
   maps:
