@@ -14,6 +14,8 @@ public record BookmarkedPopupResponse(
         String imageUrl,
         String title,
         String address,
+        Double latitude,
+        Double longitude,
         String theme,
         LocalDate startDate,
         LocalDate endDate
@@ -27,6 +29,8 @@ public record BookmarkedPopupResponse(
                 popup.getImageUrl(),
                 popup.getTitle(),
                 popup.getAddress(),
+                popup.getLatitude(),
+                popup.getLongitude(),
                 themeOf(popup),
                 popup.getStartDate(),
                 popup.getEndDate()
