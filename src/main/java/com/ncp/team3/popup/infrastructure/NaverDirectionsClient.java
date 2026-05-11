@@ -1,6 +1,8 @@
 package com.ncp.team3.popup.infrastructure;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ncp.team3.global.logging.LogMaskingUtils;
 import com.ncp.team3.popup.controller.dto.response.RoutePointResponse;
 import com.ncp.team3.popup.controller.dto.response.RouteResponse;
 import com.ncp.team3.popup.domain.Popup;
@@ -15,13 +17,17 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -34,8 +40,10 @@ public class NaverDirectionsClient {
     private final String directionsUrl;
     private final String clientId;
     private final String clientSecret;
+    private final ObjectMapper objectMapper;
 
     public NaverDirectionsClient(RestTemplateBuilder restTemplateBuilder,
+                                 ObjectMapper objectMapper,
                                  @Value("${naver.maps.directions-url}") String directionsUrl,
                                  @Value("${naver.maps.client-id}") String clientId,
                                  @Value("${naver.maps.client-secret}") String clientSecret) {
@@ -46,42 +54,72 @@ public class NaverDirectionsClient {
         this.directionsUrl = directionsUrl;
         this.clientId = clientId;
         this.clientSecret = clientSecret;
+        this.objectMapper = objectMapper;
     }
 
     public RouteResponse getDrivingRoute(List<Popup> orderedPopups) {
-        if (orderedPopups.size() < 2) {
+        List<Popup> uniqueOrderedPopups = removeDuplicateCoordinates(orderedPopups);
+        int removedDuplicateCount = orderedPopups.size() - uniqueOrderedPopups.size();
+        if (removedDuplicateCount > 0) {
+            log.info("[ROUTE OPTIMIZE] removed duplicated coordinate from naver request count={}", removedDuplicateCount);
+        }
+
+        if (uniqueOrderedPopups.size() < 2) {
             return RouteResponse.empty();
         }
-        validateWaypointCount(orderedPopups);
+        validateWaypointCount(uniqueOrderedPopups);
 
         if (clientId == null || clientId.isBlank() || clientSecret == null || clientSecret.isBlank()) {
             throw new PopupDomainException(PopupErrorCode.POPUP_ROUTE_FAILED, "네이버 지도 API client-id/client-secret 설정이 필요합니다.");
         }
 
-        URI uri = buildUri(orderedPopups);
+        URI uri = buildUri(uniqueOrderedPopups);
         log.info("[NAVER DIRECTIONS REQUEST] uri={}", uri);
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("x-ncp-apigw-api-key-id", clientId);
         headers.set("x-ncp-apigw-api-key", clientSecret);
 
+        long startTime = System.currentTimeMillis();
         try {
-            ResponseEntity<JsonNode> response = restTemplate.exchange(
+            ResponseEntity<String> response = restTemplate.exchange(
                     uri,
                     HttpMethod.GET,
                     new HttpEntity<>(headers),
-                    JsonNode.class
+                    String.class
             );
 
-            JsonNode body = response.getBody();
-            validateDirectionsResponse(body);
+            long durationMs = System.currentTimeMillis() - startTime;
+            String responseBody = response.getBody();
+            JsonNode body = readBody(responseBody);
+            log.info("[NAVER DIRECTIONS RESPONSE] status={} code={} message={} durationMs={} bodyPreview={}",
+                    response.getStatusCode().value(), responseCode(body), responseMessage(body), durationMs,
+                    LogMaskingUtils.bodyPreview(responseBody));
+            validateDirectionsResponse(body, response.getStatusCode().value(), durationMs, responseBody);
             return toRouteResponse(body);
         } catch (PopupDomainException e) {
             throw e;
+        } catch (RestClientResponseException e) {
+            long durationMs = System.currentTimeMillis() - startTime;
+            JsonNode body = readBody(e.getResponseBodyAsString());
+            log.warn("[NAVER DIRECTIONS ERROR] status={} code={} message={} bodyPreview={} durationMs={}",
+                    e.getStatusCode().value(), responseCode(body), responseMessage(body),
+                    LogMaskingUtils.bodyPreview(e.getResponseBodyAsString()), durationMs);
+            throw new PopupDomainException(PopupErrorCode.POPUP_ROUTE_FAILED);
         } catch (RestClientException e) {
-            log.warn("[NAVER DIRECTIONS FAILED] {}", e.getMessage());
+            long durationMs = System.currentTimeMillis() - startTime;
+            log.warn("[NAVER DIRECTIONS ERROR] status=unknown code=unknown message={} bodyPreview= durationMs={}",
+                    LogMaskingUtils.maskSensitiveValues(e.getMessage()), durationMs);
             throw new PopupDomainException(PopupErrorCode.POPUP_ROUTE_FAILED);
         }
+    }
+
+    private List<Popup> removeDuplicateCoordinates(List<Popup> orderedPopups) {
+        Map<String, Popup> uniquePopupsByCoordinate = new LinkedHashMap<>();
+        for (Popup popup : orderedPopups) {
+            uniquePopupsByCoordinate.putIfAbsent(coordinateKey(popup), popup);
+        }
+        return List.copyOf(uniquePopupsByCoordinate.values());
     }
 
     private void validateWaypointCount(List<Popup> orderedPopups) {
@@ -117,15 +155,61 @@ public class NaverDirectionsClient {
         return popup.getLongitude() + "," + popup.getLatitude();
     }
 
-    private void validateDirectionsResponse(JsonNode body) {
+    private String coordinateKey(Popup popup) {
+        return String.format(Locale.US, "%.7f,%.7f", popup.getLongitude(), popup.getLatitude());
+    }
+
+    private void validateDirectionsResponse(JsonNode body, int status, long durationMs, String responseBody) {
         if (body == null || body.path("code").asInt(-1) != 0) {
+            log.warn("[NAVER DIRECTIONS ERROR] status={} code={} message={} bodyPreview={} durationMs={}",
+                    status, responseCode(body), responseMessage(body), LogMaskingUtils.bodyPreview(responseBody), durationMs);
             throw new PopupDomainException(PopupErrorCode.POPUP_ROUTE_FAILED);
         }
 
         JsonNode traoptimal = body.path("route").path("traoptimal");
         if (!traoptimal.isArray() || traoptimal.isEmpty()) {
+            log.warn("[NAVER DIRECTIONS ERROR] status={} code={} message={} bodyPreview={} durationMs={}",
+                    status, responseCode(body), "traoptimal route is empty", LogMaskingUtils.bodyPreview(responseBody), durationMs);
             throw new PopupDomainException(PopupErrorCode.POPUP_ROUTE_FAILED);
         }
+    }
+
+    private JsonNode readBody(String responseBody) {
+        if (responseBody == null || responseBody.isBlank()) {
+            return null;
+        }
+
+        try {
+            return objectMapper.readTree(responseBody);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private String responseCode(JsonNode body) {
+        if (body == null) {
+            return "unknown";
+        }
+        if (body.has("code")) {
+            return body.path("code").asText();
+        }
+        if (body.path("error").has("errorCode")) {
+            return body.path("error").path("errorCode").asText();
+        }
+        return "unknown";
+    }
+
+    private String responseMessage(JsonNode body) {
+        if (body == null) {
+            return "unknown";
+        }
+        if (body.has("message")) {
+            return LogMaskingUtils.maskSensitiveValues(body.path("message").asText());
+        }
+        if (body.path("error").has("message")) {
+            return LogMaskingUtils.maskSensitiveValues(body.path("error").path("message").asText());
+        }
+        return "unknown";
     }
 
     private RouteResponse toRouteResponse(JsonNode body) {

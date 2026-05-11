@@ -10,16 +10,20 @@ import com.ncp.team3.popup.domain.exception.PopupErrorCode;
 import com.ncp.team3.popup.infrastructure.NaverDirectionsClient;
 import com.ncp.team3.popup.port.PopupRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -44,12 +48,22 @@ public class PopupRouteService {
         targetPopups.forEach(this::validateLocation);
 
         List<Popup> orderedPopups = optimizeByNearestNeighbor(startPopup, targetPopups);
-        validateDirectionsWaypointCount(orderedPopups);
-        RouteResponse route = orderedPopups.size() == 1
-                ? RouteResponse.empty()
-                : naverDirectionsClient.getDrivingRoute(orderedPopups);
+        List<Popup> naverRequestPopups = uniqueCoordinatePopups(orderedPopups);
+        List<Popup> responsePopups = expandByUniqueCoordinateOrder(orderedPopups, naverRequestPopups);
+        int duplicateCoordinateCount = orderedPopups.size() - naverRequestPopups.size();
 
-        return new PopupRouteOptimizeResponse(toOrderedPopupResponses(orderedPopups), route);
+        log.info("[ROUTE OPTIMIZE] inputPopupCount={} uniqueCoordinateCount={} duplicateCoordinateCount={}",
+                orderedPopups.size(), naverRequestPopups.size(), duplicateCoordinateCount);
+        if (duplicateCoordinateCount > 0) {
+            log.info("[ROUTE OPTIMIZE] removed duplicated coordinate from naver request count={}", duplicateCoordinateCount);
+        }
+
+        validateDirectionsWaypointCount(naverRequestPopups);
+        RouteResponse route = naverRequestPopups.size() == 1
+                ? RouteResponse.empty()
+                : naverDirectionsClient.getDrivingRoute(naverRequestPopups);
+
+        return new PopupRouteOptimizeResponse(toOrderedPopupResponses(responsePopups), route);
     }
 
     private void validateRequest(PopupRouteOptimizeRequest request) {
@@ -111,6 +125,29 @@ public class PopupRouteService {
         return orderedPopups;
     }
 
+    private List<Popup> uniqueCoordinatePopups(List<Popup> orderedPopups) {
+        LinkedHashMap<CoordinateKey, Popup> uniquePopupsByCoordinate = new LinkedHashMap<>();
+        for (Popup popup : orderedPopups) {
+            uniquePopupsByCoordinate.putIfAbsent(CoordinateKey.from(popup), popup);
+        }
+        return List.copyOf(uniquePopupsByCoordinate.values());
+    }
+
+    private List<Popup> expandByUniqueCoordinateOrder(List<Popup> orderedPopups, List<Popup> uniqueCoordinatePopups) {
+        Map<CoordinateKey, List<Popup>> popupsByCoordinate = new LinkedHashMap<>();
+        for (Popup popup : orderedPopups) {
+            popupsByCoordinate.computeIfAbsent(CoordinateKey.from(popup), key -> new ArrayList<>()).add(popup);
+        }
+
+        List<Popup> expandedPopups = new ArrayList<>();
+        for (Popup uniquePopup : uniqueCoordinatePopups) {
+            List<Popup> sameCoordinatePopups = popupsByCoordinate.getOrDefault(CoordinateKey.from(uniquePopup), List.of());
+            // 같은 좌표 그룹 안에서는 기존 greedy 정렬 결과의 순서를 유지한다.
+            expandedPopups.addAll(sameCoordinatePopups);
+        }
+        return expandedPopups;
+    }
+
     private Popup findNearestPopup(Popup current, List<Popup> candidates) {
         Popup nearest = candidates.get(0);
         double nearestDistance = haversineDistanceMeter(current, nearest);
@@ -166,5 +203,16 @@ public class PopupRouteService {
             responses.add(OrderedPopupResponse.from(orderedPopups.get(i), i + 1));
         }
         return responses;
+    }
+
+    private record CoordinateKey(String value) {
+        private static CoordinateKey from(Popup popup) {
+            return new CoordinateKey(String.format(
+                    Locale.US,
+                    "%.7f,%.7f",
+                    popup.getLongitude(),
+                    popup.getLatitude()
+            ));
+        }
     }
 }

@@ -19,6 +19,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -138,8 +139,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(value = BusinessException.class)
     public ResponseEntity<Object> onThrowException(BusinessException e, WebRequest request) {
-        log.warn("[BUSINESS EXCEPTION] domain={}, code={}, message={}", e.getDomain(), e.getBaseCode().getCode(),
-            e.getMessage(), e);
+        log.warn("[BUSINESS EXCEPTION] domain={} code={} message={} uri={} method={}",
+                e.getDomain(), e.getBaseCode().getCode(), e.getMessage(), requestUri(request), requestMethod(request));
 
         return buildResponse(e, e.getBaseCode(), HttpHeaders.EMPTY, request, null);
     }
@@ -168,6 +169,20 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      * 프로덕션 환경 여부 확인
      */
     private boolean isProductionProfile() {
-        return "prod".equalsIgnoreCase(activeProfile);
+        return activeProfile != null && activeProfile.toLowerCase().contains("prod");
+    }
+
+    private String requestUri(WebRequest request) {
+        if (request instanceof ServletWebRequest servletWebRequest) {
+            return servletWebRequest.getRequest().getRequestURI();
+        }
+        return "unknown";
+    }
+
+    private String requestMethod(WebRequest request) {
+        if (request instanceof ServletWebRequest servletWebRequest) {
+            return servletWebRequest.getRequest().getMethod();
+        }
+        return "unknown";
     }
 }

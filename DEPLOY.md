@@ -87,6 +87,27 @@ docker compose logs -f spring
 http://서버공인IP:8080/swagger-ui/index.html
 ```
 
+최근 Docker 로그만 확인하려면 아래 명령을 사용합니다.
+
+```bash
+docker logs --tail=200 ncp-server
+docker logs -f ncp-server
+docker logs ncp-server 2>&1 | grep "NAVER DIRECTIONS"
+docker logs ncp-server 2>&1 | grep "BUSINESS EXCEPTION"
+```
+
+SQL 로그가 필요할 때만 `.env`에서 profile을 추가합니다.
+
+```dotenv
+SPRING_PROFILES_ACTIVE=prod,prod-sql
+```
+
+기본 운영 profile은 SQL 로그를 끕니다.
+
+```dotenv
+SPRING_PROFILES_ACTIVE=prod
+```
+
 ## 6. NCP 방화벽 설정
 
 NCP ACG 또는 보안그룹에서 서버 인바운드 규칙에 TCP `8080` 포트를 열어야 외부에서 접속할 수 있습니다.

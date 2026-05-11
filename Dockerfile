@@ -14,6 +14,7 @@ RUN JAR_FILE=$(find build/libs -name "*.jar" ! -name "*plain.jar" | head -n 1) &
 FROM eclipse-temurin:21-jre
 
 WORKDIR /app
+ENV TZ=Asia/Seoul
 
 COPY --from=build /app/app.jar app.jar
 

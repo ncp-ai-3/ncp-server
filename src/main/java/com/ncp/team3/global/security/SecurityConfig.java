@@ -1,5 +1,6 @@
 package com.ncp.team3.global.security;
 
+import com.ncp.team3.global.logging.AccessLogFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -54,6 +55,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(new AccessLogFilter(), JwtAuthenticationFilter.class)
                 .build();
     }
 
