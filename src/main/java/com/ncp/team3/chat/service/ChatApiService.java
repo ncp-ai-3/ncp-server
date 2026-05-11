@@ -26,7 +26,7 @@ public class ChatApiService {
                           @Value("${ai.fastapi.url}") String fastApiUrl) {
         this.restTemplate = restTemplateBuilder
                 .setConnectTimeout(Duration.ofSeconds(5))
-                .setReadTimeout(Duration.ofSeconds(30))
+                .setReadTimeout(Duration.ofSeconds(60))
                 .build();
         this.fastApiUrl = fastApiUrl;
     }
